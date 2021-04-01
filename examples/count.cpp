@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
   unsigned char *text;
   int *sa = NULL, length;
   read_text(argv[1], text, length);
+  std::vector<std::pair<int, int>> F;
 
   // Compute the size of LZ77 parsing.
   std::clock_t timestamp;
@@ -60,26 +61,32 @@ int main(int argc, char **argv) {
     read_sa(argv[1], sa, length);
     std::cerr << "Running algorithm kkp3...\n";
     timestamp = std::clock();
-    nphrases = kkp3(text, sa, length, NULL);
+    nphrases = kkp3(text, sa, length, &F);
   } else if (alg == "kkp2") {
     wtimestamp = wclock();
     read_sa(argv[1], sa, length);
     std::cerr << "Running algorithm kkp2...\n";
     timestamp = std::clock();
-    nphrases = kkp2(text, sa, length, NULL);
+    nphrases = kkp2(text, sa, length, &F);
   } else if (alg == "kkp1s") {
     std::cerr << "Running algorithm kkp1s...\n";
     timestamp = std::clock();
     wtimestamp = wclock();
-    nphrases = kkp1s(text, length, std::string(argv[1]) + ".sa", NULL);
+    nphrases = kkp1s(text, length, std::string(argv[1]) + ".sa", &F);
   } else {
     std::cerr << "\nError: unrecognized algorithm name\n";
     std::exit(EXIT_FAILURE);
   }
-  std::cerr << "CPU time: " << elapsed(timestamp) << "s\n";
-  std::cerr << "Wallclock time including SA reading: "
-      << welapsed(wtimestamp) << "s\n";
-  std::cerr << "Number of phrases = " << nphrases << std::endl;
+  // std::cerr << "CPU time: " << elapsed(timestamp) << "s\n";
+  // std::cerr << "Wallclock time including SA reading: "
+  //     << welapsed(wtimestamp) << "s\n";
+  // std::cerr << "Number of phrases = " << nphrases << std::endl;
+  (void)timestamp;
+  (void)wtimestamp;
+
+  std::cout << nphrases << "\n";
+  for (auto p: F)
+    std::cout << p.first << " " << p.second << "\n";
 
   // Clean up.
   if (sa) delete[] sa;
